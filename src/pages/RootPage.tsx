@@ -1,4 +1,5 @@
 import {
+    Alert,
     Box,
     Button,
     Divider,
@@ -15,13 +16,17 @@ import {
     TextField,
     Typography
 } from "@mui/material";
-import {useState} from "react";
+import {useCallback, useEffect, useState} from "react";
 import {Format, Mode, Theme} from "./types.ts";
 import {CopyAll} from "@mui/icons-material";
+import {useSnackbar} from "notistack";
 
 export default function RootPage() {
 
     const drawerWidth = 360;
+
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+
     const [theme, setTheme] = useState<Theme>("light")
     const [format, setFormat] = useState<Format>("svg")
     const [mode, setMode] = useState<Mode>("all")
@@ -29,7 +34,22 @@ export default function RootPage() {
     const [width, setWidth] = useState(800)
     const [height, setHeight] = useState(300)
 
+    const {enqueueSnackbar} = useSnackbar();
+
     const url = `https://img.fstats.dev/timeline/1?theme=${theme}&format=${format}&mode=${mode}&width=${width}&height=${height}`
+
+    const handleWindowResize = useCallback(() => setWindowWidth(window.innerWidth), [])
+
+    useEffect(() => {
+        window.addEventListener('resize', handleWindowResize);
+        return () => window.removeEventListener('resize', handleWindowResize);
+    }, [handleWindowResize]);
+
+    if (windowWidth < 600) {
+        return (
+            <Alert severity="warning">Device window is too small. Minimal supported width is 600px</Alert>
+        )
+    }
 
     return (
         <Box sx={{
@@ -69,8 +89,8 @@ export default function RootPage() {
                             <FormLabel>Zoom (Preview)</FormLabel>
                             <Slider defaultValue={zoom} valueLabelDisplay="auto" min={0} max={500}
                                     onChange={(_, newValue) => {
-                                setZoom(newValue as number)
-                            }}/>
+                                        setZoom(newValue as number)
+                                    }}/>
                         </FormControl>
                     </ListItem>
                     <Divider/>
@@ -119,7 +139,11 @@ export default function RootPage() {
                         </FormControl>
                     </ListItem>
                     <ListItem>
-                        <Button fullWidth variant="contained" startIcon={<CopyAll/>}>Copy to clipboard</Button>
+                        <Button fullWidth variant="contained" startIcon={<CopyAll/>} onClick={() => {
+                            navigator.clipboard.writeText(url).then(() => {
+                                enqueueSnackbar("URL copied to clipboard", {variant: "info"})
+                            })
+                        }}>Copy to clipboard</Button>
                     </ListItem>
                 </List>
             </Drawer>
