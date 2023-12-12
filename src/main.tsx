@@ -1,10 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom/client'
+import RootPage from "./pages/RootPage.tsx";
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
     <React.StrictMode>
-        <>
-            <h1>fstats-image-generator-editor</h1>
-        </>
-    </React.StrictMode>,
+        <RootPage/>
+    </React.StrictMode>
 )
