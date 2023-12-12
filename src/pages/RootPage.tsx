@@ -25,7 +25,7 @@ export default function RootPage() {
     const [theme, setTheme] = useState<Theme>("light")
     const [format, setFormat] = useState<Format>("svg")
     const [mode, setMode] = useState<Mode>("all")
-    const [zoom, setZoom] = useState(100)
+    const [zoom, setZoom] = useState(200)
     const [width, setWidth] = useState(800)
     const [height, setHeight] = useState(300)
 
@@ -42,8 +42,11 @@ export default function RootPage() {
                 flexGrow: 1,
                 height: "100svh"
             }}>
-                {/* TODO Fix zoom with custom size settings */}
-                <img width={`${zoom}%`} src={url} alt="Chart Timeline"/>
+                <img style={{
+                    width: `${(width * zoom) / 100}px`,
+                    height: `${(height * zoom) / 100}px`,
+                    objectFit: 'contain',
+                }} src={url} alt="Chart Timeline"/>
             </Box>
             <Drawer
                 sx={{
@@ -64,7 +67,8 @@ export default function RootPage() {
                     <ListItem>
                         <FormControl fullWidth>
                             <FormLabel>Zoom (Preview)</FormLabel>
-                            <Slider defaultValue={zoom} valueLabelDisplay="auto" onChange={(_, newValue) => {
+                            <Slider defaultValue={zoom} valueLabelDisplay="auto" min={0} max={500}
+                                    onChange={(_, newValue) => {
                                 setZoom(newValue as number)
                             }}/>
                         </FormControl>
