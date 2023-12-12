@@ -27,6 +27,7 @@ export default function RootPage() {
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
+    const [id, setId] = useState(1)
     const [theme, setTheme] = useState<Theme>("light")
     const [format, setFormat] = useState<Format>("svg")
     const [mode, setMode] = useState<Mode>("all")
@@ -36,7 +37,7 @@ export default function RootPage() {
 
     const {enqueueSnackbar} = useSnackbar();
 
-    const url = `https://img.fstats.dev/timeline/1?theme=${theme}&format=${format}&mode=${mode}&width=${width}&height=${height}`
+    const url = `https://img.fstats.dev/timeline/${id}?theme=${theme}&format=${format}&mode=${mode}&width=${width}&height=${height}`
 
     const handleWindowResize = useCallback(() => setWindowWidth(window.innerWidth), [])
 
@@ -66,7 +67,9 @@ export default function RootPage() {
                     width: `${(width * zoom) / 100}px`,
                     height: `${(height * zoom) / 100}px`,
                     objectFit: 'contain',
-                }} src={url} alt="Chart Timeline"/>
+                }} src={url} onError={({currentTarget}) => {
+                    currentTarget.src = `https://dummyimage.com/${width}x${height}/ffffff/000000&text=Project+${id}+not+exist`
+                }} alt="Chart Timeline"/>
             </Box>
             <Drawer
                 sx={{
@@ -97,6 +100,9 @@ export default function RootPage() {
                     <ListItem>
                         <FormControl>
                             <Stack direction="row" spacing={2} paddingTop={2}>
+                                <TextField label="ID" type="number" value={id} onChange={(event) => {
+                                    if (Number(event.target.value) > 0) setId(Number(event.target.value))
+                                }}/>
                                 <TextField label="Width" type="number" value={width} onChange={(event) => {
                                     if (Number(event.target.value) > 0) setWidth(Number(event.target.value))
                                 }}/>
