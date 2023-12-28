@@ -1,5 +1,6 @@
 import {
     Alert,
+    Autocomplete,
     Box,
     Button,
     Divider,
@@ -17,9 +18,10 @@ import {
     Typography
 } from "@mui/material";
 import {useCallback, useEffect, useState} from "react";
-import {Format, Mode, Theme} from "./types.ts";
+import {ApiMessage, Format, Mode, Project, Theme} from "./types.ts";
 import {CopyAll} from "@mui/icons-material";
 import {useSnackbar} from "notistack";
+import {useQuery} from "@tanstack/react-query";
 
 export default function RootPage() {
 
@@ -27,7 +29,18 @@ export default function RootPage() {
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
-    const [id, setId] = useState(1)
+    const {data: projects} = useQuery<Project[], Error>({
+        queryKey: ["projects"],
+        queryFn: async () => {
+            const response = await fetch(`https://api.fstats.dev/v2/projects`)
+
+            if (response.status !== 200) throw new Error((await response.json() as ApiMessage).message)
+
+            return await response.json() as Project[]
+        }
+    })
+
+    const [id, setId] = useState(1);
     const [theme, setTheme] = useState<Theme>("light")
     const [format, setFormat] = useState<Format>("svg")
     const [mode, setMode] = useState<Mode>("all")
@@ -47,9 +60,7 @@ export default function RootPage() {
     }, [handleWindowResize]);
 
     if (windowWidth < 600) {
-        return (
-            <Alert severity="warning">Device window is too small. Minimal supported width is 600px</Alert>
-        )
+        return <Alert severity="warning">Device window is too small. Minimal supported width is 600px</Alert>
     }
 
     return (
@@ -91,18 +102,26 @@ export default function RootPage() {
                         <FormControl fullWidth>
                             <FormLabel>Zoom (Preview)</FormLabel>
                             <Slider defaultValue={zoom} valueLabelDisplay="auto" min={0} max={500}
-                                    onChange={(_, newValue) => {
-                                        setZoom(newValue as number)
-                                    }}/>
+                                    onChange={(_, newValue) => setZoom(newValue as number)}/>
                         </FormControl>
                     </ListItem>
                     <Divider/>
                     <ListItem>
-                        <FormControl>
+                        <FormControl style={{paddingTop: 8}}>
+                            {projects ? <Autocomplete
+                                disablePortal
+                                defaultValue={projects[0]}
+                                onChange={(_, newValue: Project | null) => {
+                                    if (newValue != null) setId(newValue.id);
+                                }}
+                                options={projects}
+                                getOptionLabel={(project) => project.name}
+                                sx={{width: 300}}
+                                renderInput={(params) => <TextField {...params} label="Projects"/>}
+                            /> : <TextField label="ID" type="number" value={id} onChange={(event) => {
+                                if (Number(event.target.value) > 0) setId(Number(event.target.value))
+                            }}/>}
                             <Stack direction="row" spacing={2} paddingTop={2}>
-                                <TextField label="ID" type="number" value={id} onChange={(event) => {
-                                    if (Number(event.target.value) > 0) setId(Number(event.target.value))
-                                }}/>
                                 <TextField label="Width" type="number" value={width} onChange={(event) => {
                                     if (Number(event.target.value) > 0) setWidth(Number(event.target.value))
                                 }}/>
@@ -146,9 +165,7 @@ export default function RootPage() {
                     </ListItem>
                     <ListItem>
                         <Button fullWidth variant="contained" startIcon={<CopyAll/>} onClick={() => {
-                            navigator.clipboard.writeText(url).then(() => {
-                                enqueueSnackbar("URL copied to clipboard", {variant: "info"})
-                            })
+                            navigator.clipboard.writeText(url).then(() => enqueueSnackbar("URL copied to clipboard", {variant: "info"}))
                         }}>Copy to clipboard</Button>
                     </ListItem>
                 </List>
