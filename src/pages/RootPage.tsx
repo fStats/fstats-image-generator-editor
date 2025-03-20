@@ -18,10 +18,11 @@ import {
     Typography
 } from "@mui/material";
 import {useCallback, useEffect, useState} from "react";
-import {ApiMessage, Format, Mode, Project, Theme} from "./types.ts";
+import {Format, Mode, Theme} from "./types.ts";
 import {CopyAll} from "@mui/icons-material";
 import {useSnackbar} from "notistack";
-import {useQuery} from "@tanstack/react-query";
+import {useProject} from "../service/projects.ts";
+import {Project} from "../service/types.ts";
 
 export default function RootPage() {
 
@@ -29,16 +30,7 @@ export default function RootPage() {
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth)
 
-    const {data: projects} = useQuery<Project[], Error>({
-        queryKey: ["projects"],
-        queryFn: async () => {
-            const response = await fetch(`https://api.fstats.dev/v2/projects`)
-
-            if (response.status !== 200) throw new Error((await response.json() as ApiMessage).message)
-
-            return await response.json() as Project[]
-        }
-    })
+    const {data: projects} = useProject()
 
     const [id, setId] = useState(1);
     const [theme, setTheme] = useState<Theme>("light")
@@ -50,7 +42,7 @@ export default function RootPage() {
 
     const {enqueueSnackbar} = useSnackbar();
 
-    const url = `https://img.fstats.dev/timeline/${id}?theme=${theme}&format=${format}&mode=${mode}&width=${width}&height=${height}`
+    const imageUrl = `https://img.fstats.dev/timeline/${id}?theme=${theme}&format=${format}&mode=${mode}&width=${width}&height=${height}`
 
     const handleWindowResize = useCallback(() => setWindowWidth(window.innerWidth), [])
 
@@ -78,7 +70,7 @@ export default function RootPage() {
                     width: `${(width * zoom) / 100}px`,
                     height: `${(height * zoom) / 100}px`,
                     objectFit: 'contain',
-                }} src={url} onError={({currentTarget}) => {
+                }} src={imageUrl} onError={({currentTarget}) => {
                     currentTarget.src = `https://dummyimage.com/${width}x${height}/ffffff/000000&text=Project+${id}+not+exist`
                 }} alt="Chart Timeline"/>
             </Box>
@@ -114,7 +106,7 @@ export default function RootPage() {
                                 onChange={(_, newValue: Project | null) => {
                                     if (newValue != null) setId(newValue.id);
                                 }}
-                                options={projects}
+                                options={projects.filter(project => project).sort((a, b) => a.name.localeCompare(b.name))}
                                 getOptionLabel={(project) => project.name}
                                 sx={{width: 300}}
                                 renderInput={(params) => <TextField {...params} label="Projects"/>}
@@ -165,7 +157,7 @@ export default function RootPage() {
                     </ListItem>
                     <ListItem>
                         <Button fullWidth variant="contained" startIcon={<CopyAll/>} onClick={() => {
-                            navigator.clipboard.writeText(url).then(() => enqueueSnackbar("URL copied to clipboard", {variant: "info"}))
+                            navigator.clipboard.writeText(imageUrl).then(() => enqueueSnackbar("URL copied to clipboard", {variant: "info"}))
                         }}>Copy to clipboard</Button>
                     </ListItem>
                 </List>
