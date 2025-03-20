@@ -104,8 +104,14 @@ export default function RootPage() {
                     <ListItem>
                         <FormControl fullWidth>
                             <FormLabel>Zoom (Preview)</FormLabel>
-                            <Slider defaultValue={zoom} valueLabelDisplay="auto" min={0} max={500}
-                                    onChange={(_, newValue) => setZoom(newValue as number)}/>
+                            <Stack direction="row" spacing={2}>
+                                <Slider defaultValue={zoom} value={zoom} valueLabelDisplay="auto" min={0} max={500}
+                                        onChange={(_, newValue) => setZoom(newValue as number)}/>
+                                <TextField sx={{width: 60}} variant="standard" type="number" value={zoom}
+                                           onChange={(event) => {
+                                               if (Number(event.target.value) > 0) setZoom(Number(event.target.value))
+                                           }}/>
+                            </Stack>
                         </FormControl>
                     </ListItem>
                     <Divider/>
