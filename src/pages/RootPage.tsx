@@ -37,7 +37,7 @@ export default function RootPage() {
     const [id, setId] = useState(1);
     const [theme, setTheme] = useState<Theme>("light")
     const [format, setFormat] = useState<Format>("svg")
-    const [mode, setMode] = useState<Mode>("all")
+    const [mode, setMode] = useState<Mode>("week")
     const [color, setColor] = useState<Color>(theme === "dark" ? "alizarin" : "peter-river")
     const [zoom, setZoom] = useState(200)
     const [width, setWidth] = useState(800)
