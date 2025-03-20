@@ -18,11 +18,12 @@ import {
     Typography
 } from "@mui/material";
 import {useCallback, useEffect, useState} from "react";
-import {Format, Mode, Theme} from "./types.ts";
-import {CopyAll} from "@mui/icons-material";
+import {Color, Format, Mode, Theme} from "./types.ts";
+import {Check, CopyAll} from "@mui/icons-material";
 import {useSnackbar} from "notistack";
 import {useProject} from "../service/projects.ts";
 import {Project} from "../service/types.ts";
+import {colorMap} from "../decoder/color.ts";
 
 export default function RootPage() {
 
@@ -36,13 +37,14 @@ export default function RootPage() {
     const [theme, setTheme] = useState<Theme>("light")
     const [format, setFormat] = useState<Format>("svg")
     const [mode, setMode] = useState<Mode>("all")
+    const [color, setColor] = useState<Color>(theme === "dark" ? "alizarin" : "peter-river")
     const [zoom, setZoom] = useState(200)
     const [width, setWidth] = useState(800)
     const [height, setHeight] = useState(300)
 
     const {enqueueSnackbar} = useSnackbar();
 
-    const imageUrl = `https://img.fstats.dev/timeline/${id}?theme=${theme}&format=${format}&mode=${mode}&width=${width}&height=${height}`
+    const imageUrl = `https://img.fstats.dev/timeline/${id}?color=${color}&theme=${theme}&format=${format}&mode=${mode}&width=${width}&height=${height}`
 
     const handleWindowResize = useCallback(() => setWindowWidth(window.innerWidth), [])
 
@@ -130,6 +132,57 @@ export default function RootPage() {
                                         onChange={(event) => setTheme(event.target.value as Theme)}>
                                 <FormControlLabel value="light" control={<Radio/>} label="Light"/>
                                 <FormControlLabel value="dark" control={<Radio/>} label="Dark"/>
+                            </RadioGroup>
+                        </FormControl>
+                    </ListItem>
+                    <ListItem>
+                        <FormControl component="fieldset">
+                            <FormLabel component="legend" sx={{mb: 1}}>Color</FormLabel>
+                            <RadioGroup onChange={(event) => {
+                                setColor(event.target.value as Color);
+                            }} row value={color} sx={{
+                                display: 'grid',
+                                gridTemplateColumns: 'repeat(auto-fill, minmax(24px, 1fr))',
+                                gap: 2,
+                                maxWidth: 300,
+                            }}>
+                                {(Object.keys(colorMap) as Color[]).map((_color) => (
+                                    <FormControlLabel key={_color} value={_color} label="" sx={{margin: 0}} control={
+                                        <Box sx={{
+                                            position: 'relative',
+                                            width: 24,
+                                            height: 24,
+                                            borderRadius: '50%',
+                                            backgroundColor: colorMap[_color],
+                                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
+                                            cursor: 'pointer',
+                                            transition: 'transform 0.2s, box-shadow 0.2s',
+                                            '&:hover': {
+                                                transform: 'scale(1.1)',
+                                            },
+                                        }}>
+                                            <Radio disableRipple checked={color === _color} value={_color} sx={{
+                                                opacity: 0,
+                                                width: '100%',
+                                                height: '100%',
+                                                position: 'absolute',
+                                                top: 0,
+                                                left: 0,
+                                                m: 0,
+                                                p: 0,
+                                            }}
+                                            />
+                                            {color === _color && <Check sx={{
+                                                color: '#fff',
+                                                fontSize: 16,
+                                                position: 'absolute',
+                                                top: '50%',
+                                                left: '50%',
+                                                transform: 'translate(-50%, -50%)',
+                                            }}/>}
+                                        </Box>
+                                    }/>
+                                ))}
                             </RadioGroup>
                         </FormControl>
                     </ListItem>
