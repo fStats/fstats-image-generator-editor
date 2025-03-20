@@ -30,6 +30,7 @@ export default function RootPage() {
     const drawerWidth = 360;
 
     const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+    const [openAnyway, setOpenAnyway] = useState(false);
 
     const {data: projects} = useProject()
 
@@ -53,8 +54,16 @@ export default function RootPage() {
         return () => window.removeEventListener('resize', handleWindowResize);
     }, [handleWindowResize]);
 
-    if (windowWidth < 600) {
-        return <Alert severity="warning">Device window is too small. Minimal supported width is 600px</Alert>
+    if (!openAnyway && windowWidth < 600) {
+        return <>
+            <Alert severity="warning">
+                Device window is too small. Webpage not adopted for least that 600px<br/>
+                <a href="#" onClick={() => setOpenAnyway(true)} style={{
+                    color: "#ed6c02",
+                    textDecorationColor: "#ed6c02"
+                }}>Open Anyway</a>
+            </Alert>
+        </>
     }
 
     return (
