@@ -159,7 +159,7 @@ export default function RootPage() {
                                     onChange={(_, newValue: Project | null) => {
                                         if (newValue != null) setId(newValue.id);
                                     }}
-                                    options={projects.filter(project => project.is_visible).sort((a, b) => a.name.localeCompare(b.name))}
+                                    options={projects.filter(project => !project.is_hidden).sort((a, b) => a.name.localeCompare(b.name))}
                                     getOptionLabel={(project) => project.name}
                                     sx={{width: 300}}
                                     renderInput={(params) => <TextField {...params} label="Projects"/>}

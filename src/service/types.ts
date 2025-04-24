@@ -1,7 +1,7 @@
 export interface Project {
     id: number,
     name: string
-    is_visible: boolean
+    is_hidden: boolean
 }
 
 export interface ApiMessage {
