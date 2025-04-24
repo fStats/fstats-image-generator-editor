@@ -1,7 +1,7 @@
 {
   "name": "fstats-image-generator-editor",
   "private": true,
-  "version": "2025.4.1",
+  "version": "2025.4.2",
   "type": "module",
   "scripts": {
     "dev": "vite",
