@@ -1,7 +1,7 @@
 {
   "name": "fstats-image-generator-editor",
   "private": true,
-  "version": "2025.3.1",
+  "version": "2025.4.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -30,6 +30,6 @@
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
     "typescript": "^5.2.2",
-    "vite": "^5.0.0"
+    "vite": "^6.3.3"
   }
 }
