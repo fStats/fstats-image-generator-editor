@@ -3,11 +3,13 @@ import {
     Autocomplete,
     Box,
     Button,
+    Checkbox,
     CssBaseline,
     Divider,
     Drawer,
     FormControl,
     FormControlLabel,
+    FormGroup,
     FormLabel,
     IconButton,
     List,
@@ -22,12 +24,12 @@ import {
 } from "@mui/material";
 import {useCallback, useEffect, useState} from "react";
 import {Color, Format, Mode, Theme} from "./types.ts";
-import {Check, CopyAll, DarkMode, LightMode} from "@mui/icons-material";
+import {CopyAll, DarkMode, LightMode} from "@mui/icons-material";
 import {useSnackbar} from "notistack";
 import {useProject} from "../service/projects.ts";
 import {Project} from "../service/types.ts";
-import {colorMap} from "../decoder/color.ts";
 import {useThemeSwitch} from "../hooks/useThemeSwitch.ts";
+import {ColorRadioGroup} from "../components/ColorRadioGroup.tsx";
 
 export default function RootPage() {
 
@@ -45,14 +47,31 @@ export default function RootPage() {
     const [theme, setTheme] = useState<Theme>(muiTheme.palette.mode)
     const [format, setFormat] = useState<Format>("svg")
     const [mode, setMode] = useState<Mode>("week")
-    const [color, setColor] = useState<Color>(theme === "dark" ? "alizarin" : "peter-river")
+    const [drawClient, setDrawClient] = useState(false)
+    const [drawServer, setDrawServer] = useState(false)
+    const [drawMixed, setDrawMixed] = useState(false)
+    const [clientColor, setClientColor] = useState<Color>("emerald")
+    const [serverColor, setServerColor] = useState<Color>("alizarin")
+    const [mixedColor, setMixedColor] = useState<Color>("peter-river")
     const [zoom, setZoom] = useState(150)
     const [width, setWidth] = useState(800)
     const [height, setHeight] = useState(300)
 
     const {enqueueSnackbar} = useSnackbar();
 
-    const imageUrl = `https://img.fstats.dev/timeline/${id}?color=${color}&theme=${theme}&format=${format}&mode=${mode}&width=${width}&height=${height}`
+    const params = new URLSearchParams({
+        theme,
+        format,
+        mode,
+        width: String(width),
+        height: String(height),
+    });
+
+    if (drawClient) params.set("client_color", clientColor);
+    if (drawServer) params.set("server_color", serverColor);
+    if (drawMixed) params.set("mixed_color", mixedColor);
+
+    const imageUrl = `https://img.fstats.dev/v2/timeline/${id}?${params.toString()}`;
 
     const handleWindowResize = useCallback(() => setWindowWidth(window.innerWidth), [])
 
@@ -168,58 +187,39 @@ export default function RootPage() {
                             </FormControl>
                         </ListItem>
                         <ListItem>
-                            <FormControl component="fieldset">
-                                <FormLabel component="legend" sx={{mb: 1}}>Color</FormLabel>
-                                <RadioGroup onChange={(event) => {
-                                    setColor(event.target.value as Color);
-                                }} row value={color} sx={{
-                                    display: 'grid',
-                                    gridTemplateColumns: 'repeat(auto-fill, minmax(24px, 1fr))',
-                                    gap: 2,
-                                    maxWidth: 300,
-                                }}>
-                                    {(Object.keys(colorMap) as Color[]).map((_color) => (
-                                        <FormControlLabel key={_color} value={_color} label="" sx={{margin: 0}}
-                                                          control={
-                                                              <Box sx={{
-                                                                  position: 'relative',
-                                                                  width: 24,
-                                                                  height: 24,
-                                                                  borderRadius: '50%',
-                                                                  backgroundColor: colorMap[_color],
-                                                                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.2)',
-                                                                  cursor: 'pointer',
-                                                                  transition: 'transform 0.2s, box-shadow 0.2s',
-                                                                  '&:hover': {
-                                                                      transform: 'scale(1.1)',
-                                                                  },
-                                                              }}>
-                                                                  <Radio disableRipple checked={color === _color}
-                                                                         value={_color} sx={{
-                                                                      opacity: 0,
-                                                                      width: '100%',
-                                                                      height: '100%',
-                                                                      position: 'absolute',
-                                                                      top: 0,
-                                                                      left: 0,
-                                                                      m: 0,
-                                                                      p: 0,
-                                                                  }}
-                                                                  />
-                                                                  {color === _color && <Check sx={{
-                                                                      color: '#fff',
-                                                                      fontSize: 16,
-                                                                      position: 'absolute',
-                                                                      top: '50%',
-                                                                      left: '50%',
-                                                                      transform: 'translate(-50%, -50%)',
-                                                                  }}/>}
-                                                              </Box>
-                                                          }/>
-                                    ))}
-                                </RadioGroup>
-                            </FormControl>
+                            <FormGroup>
+                                <FormLabel component="legend">Charts</FormLabel>
+                                <FormControlLabel control={
+                                    <Checkbox checked={drawClient}
+                                              onChange={(e) => setDrawClient(e.target.checked)}/>
+                                } label="Client"/>
+                                <FormControlLabel control={
+                                    <Checkbox checked={drawServer}
+                                              onChange={(e) => setDrawServer(e.target.checked)}/>
+                                } label="Server"/>
+                                <FormControlLabel control={
+                                    <Checkbox checked={drawMixed}
+                                              onChange={(e) => setDrawMixed(e.target.checked)}
+                                              defaultChecked/>
+                                } label="Mixed"/>
+                            </FormGroup>
                         </ListItem>
+                        {(drawClient || drawServer || drawMixed) && <ListItem>
+                            <FormControl component="fieldset">
+                                {drawClient && <>
+                                    <FormLabel component="legend">Client color</FormLabel>
+                                    <ColorRadioGroup color={clientColor} setColor={setClientColor}/>
+                                </>}
+                                {drawServer && <>
+                                    <FormLabel component="legend">Server color</FormLabel>
+                                    <ColorRadioGroup color={serverColor} setColor={setServerColor}/>
+                                </>}
+                                {drawMixed && <>
+                                    <FormLabel component="legend">Mixed color</FormLabel>
+                                    <ColorRadioGroup color={mixedColor} setColor={setMixedColor}/>
+                                </>}
+                            </FormControl>
+                        </ListItem>}
                         <ListItem>
                             <FormControl>
                                 <FormLabel>Format</FormLabel>
