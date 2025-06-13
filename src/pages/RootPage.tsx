@@ -1,4 +1,4 @@
-import {CopyAll, DarkMode, LightMode} from "@mui/icons-material";
+import {CopyAll, Settings} from "@mui/icons-material";
 import {
     Alert,
     Autocomplete,
@@ -23,12 +23,12 @@ import {
     Typography,
     useTheme
 } from "@mui/material";
-import {t} from "i18next";
 import {useSnackbar} from "notistack";
 import {useCallback, useEffect, useState} from "react";
+import {useTranslation} from "react-i18next";
 
 import {ColorRadioGroup} from "@components/ColorRadioGroup.tsx";
-import {useThemeSwitch} from "@hooks/useThemeSwitch.ts";
+import {SettingsDialog} from "@pages/dialog/SettingsDialog.tsx";
 import {useProject} from "@service/projects.ts";
 import {Project} from "@service/types.ts";
 
@@ -41,8 +41,8 @@ export default function RootPage() {
     const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [openAnyway, setOpenAnyway] = useState(false);
 
-    const {toggleColorMode} = useThemeSwitch();
     const muiTheme = useTheme();
+    const {t} = useTranslation();
 
     const {data: projects} = useProject();
 
@@ -59,6 +59,8 @@ export default function RootPage() {
     const [zoom, setZoom] = useState(150);
     const [width, setWidth] = useState(800);
     const [height, setHeight] = useState(300);
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
 
     const {enqueueSnackbar} = useSnackbar();
 
@@ -77,6 +79,8 @@ export default function RootPage() {
     const imageUrl = `https://img.fstats.dev/v2/timeline/${id}?${params.toString()}`;
 
     const handleWindowResize = useCallback(() => setWindowWidth(window.innerWidth), []);
+
+    const openSettingsDialog = () => setIsDialogOpen(true);
 
     useEffect(() => {
         window.addEventListener("resize", handleWindowResize);
@@ -99,6 +103,7 @@ export default function RootPage() {
     return (
         <>
             <CssBaseline/>
+            <SettingsDialog isDialogOpen={isDialogOpen} setIsDialogOpen={setIsDialogOpen}/>
             <Box sx={{
                 display: "flex"
             }}>
@@ -131,13 +136,13 @@ export default function RootPage() {
                     anchor="right"
                 >
                     <Stack direction="row">
-                        <Typography flexGrow={1} paddingLeft={4} variant="h4" align="center"
-                                    paddingBottom={2}>
-                            {t("settings")}
+                        <Typography flexGrow={1} paddingLeft={4} variant="h4" align="center" paddingBottom={2}>
+                            {t("editor")}
                         </Typography>
                         <Box>
-                            <IconButton size="large" name="Theme" onClick={toggleColorMode} color="inherit">
-                                {muiTheme.palette.mode === "light" ? <LightMode/> : <DarkMode/>}
+                            <IconButton size="large" name={t("settings.label")} onClick={openSettingsDialog}
+                                        color="inherit">
+                                <Settings/>
                             </IconButton>
                         </Box>
                     </Stack>
