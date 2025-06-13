@@ -1,6 +1,6 @@
 import {QueryClient, QueryClientProvider} from "@tanstack/react-query";
 import {SnackbarProvider} from "notistack";
-import {StrictMode} from "react";
+import {StrictMode, Suspense} from "react";
 import {createRoot} from "react-dom/client";
 
 import {ThemeSwitchProvider} from "@hooks/providers/ThemeSwitchProvider.tsx";
@@ -11,7 +11,9 @@ createRoot(document.getElementById("root")!).render(
         <QueryClientProvider client={new QueryClient()}>
             <ThemeSwitchProvider>
                 <SnackbarProvider>
-                    <RootPage/>
+                    <Suspense>
+                        <RootPage/>
+                    </Suspense>
                 </SnackbarProvider>
             </ThemeSwitchProvider>
         </QueryClientProvider>
