@@ -6,16 +6,20 @@ import {createRoot} from "react-dom/client";
 import {ThemeSwitchProvider} from "@hooks/providers/ThemeSwitchProvider.tsx";
 import RootPage from "@pages/RootPage.tsx";
 
-createRoot(document.getElementById("root")!).render(
-    <StrictMode>
-        <QueryClientProvider client={new QueryClient()}>
-            <ThemeSwitchProvider>
-                <SnackbarProvider>
-                    <Suspense>
-                        <RootPage/>
-                    </Suspense>
-                </SnackbarProvider>
-            </ThemeSwitchProvider>
-        </QueryClientProvider>
-    </StrictMode>
-);
+import {initPromise} from "./i18n.ts";
+
+initPromise.then(() => {
+    createRoot(document.getElementById("root")!).render(
+        <StrictMode>
+            <QueryClientProvider client={new QueryClient()}>
+                <ThemeSwitchProvider>
+                    <SnackbarProvider>
+                        <Suspense>
+                            <RootPage/>
+                        </Suspense>
+                    </SnackbarProvider>
+                </ThemeSwitchProvider>
+            </QueryClientProvider>
+        </StrictMode>
+    );
+});

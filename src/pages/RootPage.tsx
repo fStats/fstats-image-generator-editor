@@ -23,6 +23,7 @@ import {
     Typography,
     useTheme
 } from "@mui/material";
+import {t} from "i18next";
 import {useSnackbar} from "notistack";
 import {useCallback, useEffect, useState} from "react";
 
@@ -130,7 +131,9 @@ export default function RootPage() {
                 >
                     <Stack direction="row">
                         <Typography flexGrow={1} paddingLeft={4} variant="h4" align="center"
-                                    paddingBottom={2}>Settings</Typography>
+                                    paddingBottom={2}>
+                            {t("settings")}
+                        </Typography>
                         <Box>
                             <IconButton size="large" name="Theme" onClick={toggleColorMode} color="inherit">
                                 {muiTheme.palette.mode === "light" ? <LightMode/> : <DarkMode/>}
@@ -141,7 +144,9 @@ export default function RootPage() {
                     <List>
                         <ListItem>
                             <FormControl fullWidth>
-                                <FormLabel>Zoom (Preview)</FormLabel>
+                                <FormLabel>
+                                    {t("zoom")}
+                                </FormLabel>
                                 <Stack direction="row" spacing={2}>
                                     <Slider defaultValue={zoom} value={zoom} valueLabelDisplay="auto" min={0} max={500}
                                             onChange={(_, newValue) => setZoom(newValue as number)}/>
@@ -164,15 +169,15 @@ export default function RootPage() {
                                     options={projects.filter(project => !project.is_hidden).sort((a, b) => a.name.localeCompare(b.name))}
                                     getOptionLabel={(project) => project.name}
                                     sx={{width: 300}}
-                                    renderInput={(params) => <TextField {...params} label="Projects"/>}
+                                    renderInput={(params) => <TextField {...params} label={t("projects")}/>}
                                 /> : <TextField label="ID" type="number" value={id} onChange={(event) => {
                                     if (Number(event.target.value) > 0) setId(Number(event.target.value));
                                 }}/>}
                                 <Stack direction="row" spacing={2} paddingTop={2}>
-                                    <TextField label="Width" type="number" value={width} onChange={(event) => {
+                                    <TextField label={t("width")} type="number" value={width} onChange={(event) => {
                                         if (Number(event.target.value) > 0) setWidth(Number(event.target.value));
                                     }}/>
-                                    <TextField label="Height" type="number" value={height} onChange={(event) => {
+                                    <TextField label={t("height")} type="number" value={height} onChange={(event) => {
                                         if (Number(event.target.value) > 0) setHeight(Number(event.target.value));
                                     }}/>
                                 </Stack>
@@ -180,51 +185,63 @@ export default function RootPage() {
                         </ListItem>
                         <ListItem>
                             <FormControl>
-                                <FormLabel>Theme</FormLabel>
+                                <FormLabel>
+                                    {t("theme")}
+                                </FormLabel>
                                 <RadioGroup row value={theme}
                                             onChange={(event) => setTheme(event.target.value as Theme)}>
-                                    <FormControlLabel value="light" control={<Radio/>} label="Light"/>
-                                    <FormControlLabel value="dark" control={<Radio/>} label="Dark"/>
+                                    <FormControlLabel value="light" control={<Radio/>} label={t("light")}/>
+                                    <FormControlLabel value="dark" control={<Radio/>} label={t("dark")}/>
                                 </RadioGroup>
                             </FormControl>
                         </ListItem>
                         <ListItem>
                             <FormGroup>
-                                <FormLabel component="legend">Charts</FormLabel>
+                                <FormLabel component="legend">
+                                    {t("charts")}
+                                </FormLabel>
                                 <FormControlLabel control={
                                     <Checkbox checked={drawClient}
                                               onChange={(e) => setDrawClient(e.target.checked)}/>
-                                } label="Client"/>
+                                } label={t("client")}/>
                                 <FormControlLabel control={
                                     <Checkbox checked={drawServer}
                                               onChange={(e) => setDrawServer(e.target.checked)}/>
-                                } label="Server"/>
+                                } label={t("server")}/>
                                 <FormControlLabel control={
                                     <Checkbox checked={drawMixed}
                                               onChange={(e) => setDrawMixed(e.target.checked)}
                                               defaultChecked/>
-                                } label="Mixed"/>
+                                } label={t("mixed")}/>
                             </FormGroup>
                         </ListItem>
                         {(drawClient || drawServer || drawMixed) && <ListItem>
                             <FormControl component="fieldset">
                                 {drawClient && <>
-                                    <FormLabel component="legend">Client color</FormLabel>
+                                    <FormLabel component="legend">
+                                        {t("clientColor")}
+                                    </FormLabel>
                                     <ColorRadioGroup color={clientColor} setColor={setClientColor}/>
                                 </>}
                                 {drawServer && <>
-                                    <FormLabel component="legend">Server color</FormLabel>
+                                    <FormLabel component="legend">
+                                        {t("serverColor")}
+                                    </FormLabel>
                                     <ColorRadioGroup color={serverColor} setColor={setServerColor}/>
                                 </>}
                                 {drawMixed && <>
-                                    <FormLabel component="legend">Mixed color</FormLabel>
+                                    <FormLabel component="legend">
+                                        {t("mixedColor")}
+                                    </FormLabel>
                                     <ColorRadioGroup color={mixedColor} setColor={setMixedColor}/>
                                 </>}
                             </FormControl>
                         </ListItem>}
                         <ListItem>
                             <FormControl>
-                                <FormLabel>Format</FormLabel>
+                                <FormLabel>
+                                    {t("format")}
+                                </FormLabel>
                                 <RadioGroup row value={format}
                                             onChange={(event) => setFormat(event.target.value as Format)}>
                                     <FormControlLabel value="svg" control={<Radio/>} label="SVG"/>
@@ -234,20 +251,24 @@ export default function RootPage() {
                         </ListItem>
                         <ListItem>
                             <FormControl>
-                                <FormLabel>Mode</FormLabel>
+                                <FormLabel>
+                                    {t("mode")}
+                                </FormLabel>
                                 <RadioGroup row value={mode}
                                             onChange={(event) => setMode(event.target.value as Mode)}>
-                                    <FormControlLabel value="all" control={<Radio/>} label="All"/>
-                                    <FormControlLabel value="quarter" control={<Radio/>} label="Quarter"/>
-                                    <FormControlLabel value="month" control={<Radio/>} label="Month"/>
-                                    <FormControlLabel value="week" control={<Radio/>} label="Week"/>
+                                    <FormControlLabel value="all" control={<Radio/>} label={t("all")}/>
+                                    <FormControlLabel value="quarter" control={<Radio/>} label={t("quarter")}/>
+                                    <FormControlLabel value="month" control={<Radio/>} label={t("month")}/>
+                                    <FormControlLabel value="week" control={<Radio/>} label={t("week")}/>
                                 </RadioGroup>
                             </FormControl>
                         </ListItem>
                         <ListItem>
                             <Button fullWidth variant="contained" startIcon={<CopyAll/>} onClick={() => {
-                                navigator.clipboard.writeText(imageUrl).then(() => enqueueSnackbar("URL copied to clipboard", {variant: "info"}));
-                            }}>Copy to clipboard</Button>
+                                navigator.clipboard.writeText(imageUrl).then(() => enqueueSnackbar(t("copyAlert"), {variant: "info"}));
+                            }}>
+                                {t("copy")}
+                            </Button>
                         </ListItem>
                     </List>
                 </Drawer>
