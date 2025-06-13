@@ -85,6 +85,7 @@ export default function RootPage() {
 
     if (!openAnyway && windowWidth < 600) {
         return <>
+            <CssBaseline/>
             <Alert severity="warning">
                 Device window is too small. Webpage not adopted for least that 600px<br/>
                 <a href="#" onClick={() => setOpenAnyway(true)} style={{
