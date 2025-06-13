@@ -1,34 +1,52 @@
-# React + TypeScript + Vite
+# fStats Image Generator Editor
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This is the fStats image generator editor repository for the fStats image generator service,
+built with Vite, React, and Material UI.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md)
-  uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast
-  Refresh
+## Localization
 
-## Expanding the ESLint configuration
+All translation files are located in the `public/locales/` folder.
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+### Adding a New Language
 
-- Configure the top-level `parserOptions` property like this:
+To contribute a new translation:
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+1. **Create a folder** inside `public/locales/` named with the language code, for example:
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked`
-  or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and
-  add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+- `fr` for French
+- `de` for German
+- `fi` for Finnish  
+  *(You can look up language codes [here](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes) if unsure)*
+
+2. **Register the language** in `src/i18n.ts`:
+    ```ts
+    export const supportedLanguages = ["en", "fi"]; // Add your language code here
+    ```
+
+3. **Add the required translation files** to your folder.  
+   Use the files from the `en` folder as a reference.
+   Each file corresponds to a section of the site (e.g., `common.json`, etc.).
+
+4. **Run the site locally** to test:
+    ```bash
+    npm install
+    npm run dev
+    ```
+
+5. **Open the app**
+
+> 📝 Tip: You don’t need to translate every file immediately — partial translations are welcome and helpful!
+
+---
+
+### Translation Progress
+
+| Code | Language |        Status        |   Translator    |
+|:----:|:--------:|:--------------------:|:---------------:|
+|  en  | English  | Native (Always 100%) | Syorito Hatsuki |
+
+---
+
+Thanks for helping make fStats accessible to more people!
