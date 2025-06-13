@@ -1,3 +1,4 @@
+import {CopyAll, DarkMode, LightMode} from "@mui/icons-material";
 import {
     Alert,
     Autocomplete,
@@ -22,40 +23,41 @@ import {
     Typography,
     useTheme
 } from "@mui/material";
-import {useCallback, useEffect, useState} from "react";
-import {Color, Format, Mode, Theme} from "./types.ts";
-import {CopyAll, DarkMode, LightMode} from "@mui/icons-material";
 import {useSnackbar} from "notistack";
-import {useProject} from "../service/projects.ts";
-import {Project} from "../service/types.ts";
-import {useThemeSwitch} from "../hooks/useThemeSwitch.ts";
-import {ColorRadioGroup} from "../components/ColorRadioGroup.tsx";
+import {useCallback, useEffect, useState} from "react";
+
+import {ColorRadioGroup} from "@components/ColorRadioGroup.tsx";
+import {useThemeSwitch} from "@hooks/useThemeSwitch.ts";
+import {useProject} from "@service/projects.ts";
+import {Project} from "@service/types.ts";
+
+import {Color, Format, Mode, Theme} from "./types.ts";
 
 export default function RootPage() {
 
     const drawerWidth = 360;
 
-    const [windowWidth, setWindowWidth] = useState(window.innerWidth)
+    const [windowWidth, setWindowWidth] = useState(window.innerWidth);
     const [openAnyway, setOpenAnyway] = useState(false);
 
-    const {toggleColorMode} = useThemeSwitch()
-    const muiTheme = useTheme()
+    const {toggleColorMode} = useThemeSwitch();
+    const muiTheme = useTheme();
 
-    const {data: projects} = useProject()
+    const {data: projects} = useProject();
 
     const [id, setId] = useState(1);
-    const [theme, setTheme] = useState<Theme>(muiTheme.palette.mode)
-    const [format, setFormat] = useState<Format>("svg")
-    const [mode, setMode] = useState<Mode>("week")
-    const [drawClient, setDrawClient] = useState(false)
-    const [drawServer, setDrawServer] = useState(false)
-    const [drawMixed, setDrawMixed] = useState(false)
-    const [clientColor, setClientColor] = useState<Color>("emerald")
-    const [serverColor, setServerColor] = useState<Color>("alizarin")
-    const [mixedColor, setMixedColor] = useState<Color>("peter-river")
-    const [zoom, setZoom] = useState(150)
-    const [width, setWidth] = useState(800)
-    const [height, setHeight] = useState(300)
+    const [theme, setTheme] = useState<Theme>(muiTheme.palette.mode);
+    const [format, setFormat] = useState<Format>("svg");
+    const [mode, setMode] = useState<Mode>("week");
+    const [drawClient, setDrawClient] = useState(false);
+    const [drawServer, setDrawServer] = useState(false);
+    const [drawMixed, setDrawMixed] = useState(false);
+    const [clientColor, setClientColor] = useState<Color>("emerald");
+    const [serverColor, setServerColor] = useState<Color>("alizarin");
+    const [mixedColor, setMixedColor] = useState<Color>("peter-river");
+    const [zoom, setZoom] = useState(150);
+    const [width, setWidth] = useState(800);
+    const [height, setHeight] = useState(300);
 
     const {enqueueSnackbar} = useSnackbar();
 
@@ -73,11 +75,11 @@ export default function RootPage() {
 
     const imageUrl = `https://img.fstats.dev/v2/timeline/${id}?${params.toString()}`;
 
-    const handleWindowResize = useCallback(() => setWindowWidth(window.innerWidth), [])
+    const handleWindowResize = useCallback(() => setWindowWidth(window.innerWidth), []);
 
     useEffect(() => {
-        window.addEventListener('resize', handleWindowResize);
-        return () => window.removeEventListener('resize', handleWindowResize);
+        window.addEventListener("resize", handleWindowResize);
+        return () => window.removeEventListener("resize", handleWindowResize);
     }, [handleWindowResize]);
 
     if (!openAnyway && windowWidth < 600) {
@@ -89,7 +91,7 @@ export default function RootPage() {
                     textDecorationColor: "#ed6c02"
                 }}>Open Anyway</a>
             </Alert>
-        </>
+        </>;
     }
 
     return (
@@ -108,18 +110,18 @@ export default function RootPage() {
                     <img style={{
                         width: `${(width * zoom) / 100}px`,
                         height: `${(height * zoom) / 100}px`,
-                        objectFit: 'contain',
+                        objectFit: "contain",
                     }} src={imageUrl} onError={({currentTarget}) => {
-                        currentTarget.src = `https://dummyimage.com/${width}x${height}/ffffff/000000&text=Project+${id}+not+exist`
+                        currentTarget.src = `https://dummyimage.com/${width}x${height}/ffffff/000000&text=Project+${id}+not+exist`;
                     }} alt="Chart Timeline"/>
                 </Box>
                 <Drawer
                     sx={{
                         width: drawerWidth,
                         flexShrink: 0,
-                        '& .MuiDrawer-paper': {
+                        "& .MuiDrawer-paper": {
                             width: drawerWidth,
-                            boxSizing: 'border-box',
+                            boxSizing: "border-box",
                             padding: 2
                         }
                     }}
@@ -145,7 +147,7 @@ export default function RootPage() {
                                             onChange={(_, newValue) => setZoom(newValue as number)}/>
                                     <TextField sx={{width: 60}} variant="standard" type="number" value={zoom}
                                                onChange={(event) => {
-                                                   if (Number(event.target.value) > 0) setZoom(Number(event.target.value))
+                                                   if (Number(event.target.value) > 0) setZoom(Number(event.target.value));
                                                }}/>
                                 </Stack>
                             </FormControl>
@@ -164,14 +166,14 @@ export default function RootPage() {
                                     sx={{width: 300}}
                                     renderInput={(params) => <TextField {...params} label="Projects"/>}
                                 /> : <TextField label="ID" type="number" value={id} onChange={(event) => {
-                                    if (Number(event.target.value) > 0) setId(Number(event.target.value))
+                                    if (Number(event.target.value) > 0) setId(Number(event.target.value));
                                 }}/>}
                                 <Stack direction="row" spacing={2} paddingTop={2}>
                                     <TextField label="Width" type="number" value={width} onChange={(event) => {
-                                        if (Number(event.target.value) > 0) setWidth(Number(event.target.value))
+                                        if (Number(event.target.value) > 0) setWidth(Number(event.target.value));
                                     }}/>
                                     <TextField label="Height" type="number" value={height} onChange={(event) => {
-                                        if (Number(event.target.value) > 0) setHeight(Number(event.target.value))
+                                        if (Number(event.target.value) > 0) setHeight(Number(event.target.value));
                                     }}/>
                                 </Stack>
                             </FormControl>
@@ -244,12 +246,12 @@ export default function RootPage() {
                         </ListItem>
                         <ListItem>
                             <Button fullWidth variant="contained" startIcon={<CopyAll/>} onClick={() => {
-                                navigator.clipboard.writeText(imageUrl).then(() => enqueueSnackbar("URL copied to clipboard", {variant: "info"}))
+                                navigator.clipboard.writeText(imageUrl).then(() => enqueueSnackbar("URL copied to clipboard", {variant: "info"}));
                             }}>Copy to clipboard</Button>
                         </ListItem>
                     </List>
                 </Drawer>
             </Box>
         </>
-    )
+    );
 }

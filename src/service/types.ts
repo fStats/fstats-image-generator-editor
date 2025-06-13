@@ -1,10 +1,10 @@
-export interface Project {
-    id: number,
-    name: string
-    is_hidden: boolean
-}
-
 export interface ApiMessage {
     code: number,
     message: string
+}
+
+export interface Project {
+    id: number,
+    is_hidden: boolean
+    name: string
 }

@@ -1,5 +1,6 @@
-import {Color} from "../pages/types.ts";
 import {Dispatch} from "react";
+
+import {Color} from "@pages/types.ts";
 
 export interface ColorRadioGroupProps {
     color: Color

@@ -1,8 +1,9 @@
-import {DefaultProvidersProps} from "../types.ts";
+import {ThemeProvider} from "@emotion/react";
 import {createTheme, PaletteMode} from "@mui/material";
 import {useMemo, useState} from "react";
-import {ThemeProvider} from "@emotion/react";
-import {ColorModeContext} from "../useThemeSwitch.ts";
+
+import {DefaultProvidersProps} from "@hooks/types.ts";
+import {ColorModeContext} from "@hooks/useThemeSwitch.ts";
 
 export const ThemeSwitchProvider = (props: DefaultProvidersProps) => {
     const storedTheme = localStorage.getItem("theme") as PaletteMode;

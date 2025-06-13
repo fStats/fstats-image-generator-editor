@@ -1,4 +1,4 @@
-import {Color} from "../pages/types.ts";
+import {Color} from "@pages/types.ts";
 
 export const colorMap: Record<Color, string> = {
     "alizarin": "#e74c3c",
