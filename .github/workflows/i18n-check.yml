@@ -1,0 +1,89 @@
+# .github/workflows/i18n-check.yml
+name: i18n Checklist
+
+on:
+  pull_request:
+    paths:
+      - "public/locales/**"
+      - "src/init/i18n.ts"
+
+jobs:
+  check-i18n:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Find new language codes
+        id: find_langs
+        run: |
+          echo "## Checking for new languages..." >> $GITHUB_STEP_SUMMARY
+
+          existing_langs=$(git show origin/main:src/init/i18n.ts | grep 'supportedLanguages' | grep -oE '".*?"' | tr -d '"' | tr '\n' ' ')
+          echo "Existing langs: $existing_langs"
+
+          all_lang_dirs=$(ls public/locales)
+          new_langs=""
+
+          for dir in $all_lang_dirs; do
+            if [[ ! "$existing_langs" =~ "$dir" ]]; then
+              new_langs="$new_langs $dir"
+            fi
+          done
+
+          new_langs=$(echo "$new_langs" | xargs) # trim
+          echo "Detected new langs: $new_langs"
+
+          echo "langs=$new_langs" >> $GITHUB_OUTPUT
+
+      - name: Check new language details and post checklist
+        if: steps.find_langs.outputs.langs != ''
+        run: |
+          langs="${{ steps.find_langs.outputs.langs }}"
+
+          body=""
+
+          for lang_code in $langs; do
+            folder_check="[ ]"
+            file_check="[ ]"
+            reg_check="[ ]"
+            dev_check="[ ]"
+            settings_check="[ ]"
+
+            # Check folder
+            if [ -d "public/locales/$lang_code" ]; then
+              folder_check="[x]"
+            fi
+
+            # Check if common.json exists
+            if [ -f "public/locales/$lang_code/common.json" ]; then
+              file_check="[x]"
+            fi
+
+            # Check if registered in supportedLanguages
+            if grep -q "\"$lang_code\"" src/init/i18n.ts; then
+              reg_check="[x]"
+            fi
+
+            body+="### Language: \`$lang_code\`\n"
+            body+="- $folder_check Created folder: \`public/locales/$lang_code/\`\n"
+            body+="- $file_check Added \`common.json\`\n"
+            body+="- $reg_check Registered in \`supportedLanguages\` in \`src/init/i18n.ts\`\n"
+            body+="- $dev_check Ran \`npm run dev\` and tested the language\n"
+            body+="- $settings_check Language appears and loads in app Settings\n\n"
+          done
+
+          # Save to file so we can use it in next step
+          echo "$body" > comment.md
+
+      - name: Post comment to PR
+        if: steps.find_langs.outputs.langs != ''
+        uses: peter-evans/create-or-update-comment@v4
+        with:
+          issue-number: ${{ github.event.pull_request.number }}
+          body-path: comment.md
+          comment-id: ${{ steps.find_comment.outputs.comment-id || '' }}
+          edit-mode: replace
